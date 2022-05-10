@@ -8,8 +8,8 @@ import { ApolloServer } from 'apollo-server-express';
 import session from 'express-session';
 import { uuid } from 'uuidv4';
 import passport from 'passport';
-import typeDefs from './typeDefs';
-import resolvers from './resolvers';
+import typeDefs from './GraphQL/typeDefs';
+import resolvers from './GraphQL/resolvers';
 
 
 const app: Express = express();
