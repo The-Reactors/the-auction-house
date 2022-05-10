@@ -1,9 +1,16 @@
-import express, { Express, Request, Response } from 'express';
+import express, { Express} from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 const userRoutes = require("./routes/user")
 require("./database/dbConfig")
 dotenv.config();
+import { ApolloServer } from 'apollo-server-express';
+import session from 'express-session';
+import { uuid } from 'uuidv4';
+import passport from 'passport';
+import typeDefs from './typeDefs';
+import resolvers from './resolvers';
+
 
 const app: Express = express();
 const port = process.env.PORT;
@@ -28,10 +35,56 @@ const options: cors.CorsOptions = {
 
 app.use(cors(options));
 
+passport.serializeUser((obj:any, done:any) => {
+  console.log("Serilializing User");
+  console.log(obj);
+  done(null, obj);
+});
+
+// * Passport deserializeUser
+passport.deserializeUser(async (obj:any, done:any) => {
+  console.log("Deserializing User");
+  done(null, obj);
+});
+
+
+
+let secret_key:any = process.env.SESSION_SECRET
+
+app.use(session({
+  genid: (req) => uuid(),
+  secret: secret_key,
+  resave: false,
+  saveUninitialized: false,
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+//Routes
+app.use('/api/user',userRoutes);
+
+const startServer = async () => {
+    const server = new ApolloServer({
+      typeDefs,
+      resolvers,
+      context: ({ req }) => ({
+        getUser: () => req.user,
+        logout: () => req.logout(),
+      }),
+    });
+
+    await server.start();
+    server.applyMiddleware({ app })
+}
+
+startServer();
+
+
 
 app.listen(port, () => {
   console.log(`⚡️Server is running at http://localhost:${port}`);
 });
 
-//Routes
-app.use('/api/user',userRoutes);
+
+
