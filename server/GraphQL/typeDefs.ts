@@ -1,10 +1,11 @@
 import { gql } from 'apollo-server-express';
 const typeDefs = gql`
   type User {
-    id: ID
-    firstName: String
-    lastName: String
+    user_id: String
+    name: String
     email: String
+    profilepiclink: String
+    googleid: String
   }
   type Query {
     currentUser: User

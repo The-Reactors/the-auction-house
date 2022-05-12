@@ -6,10 +6,12 @@ require("./database/dbConfig")
 dotenv.config();
 import { ApolloServer } from 'apollo-server-express';
 import session from 'express-session';
+const cookieParser = require("cookie-parser");
 import { uuid } from 'uuidv4';
 import passport from 'passport';
 import typeDefs from './GraphQL/typeDefs';
 import resolvers from './GraphQL/resolvers';
+
 
 
 const app: Express = express();
@@ -35,20 +37,6 @@ const options: cors.CorsOptions = {
 
 app.use(cors(options));
 
-passport.serializeUser((obj:any, done:any) => {
-  console.log("Serilializing User");
-  console.log(obj);
-  done(null, obj);
-});
-
-// * Passport deserializeUser
-passport.deserializeUser(async (obj:any, done:any) => {
-  console.log("Deserializing User");
-  done(null, obj);
-});
-
-
-
 let secret_key:any = process.env.SESSION_SECRET
 
 app.use(session({
@@ -57,30 +45,33 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
 }));
-
+app.use(cookieParser(process.env.SECRET_KEY));
 app.use(passport.initialize());
 app.use(passport.session());
+require('./passport-config/passport-config')
 
-//Routes
-app.use('/api/user',userRoutes);
+
 
 const startServer = async () => {
     const server = new ApolloServer({
       typeDefs,
       resolvers,
       context: ({ req }) => ({
-        getUser: () => req.user,
+        user: () => req.user,
         logout: () => req.logout(),
-      }),
+  }),
+      
     });
 
     await server.start();
-    server.applyMiddleware({ app })
+    server.applyMiddleware({ app , cors:false})
 }
 
 startServer();
 
 
+//Routes
+app.use(userRoutes);
 
 app.listen(port, () => {
   console.log(`⚡️Server is running at http://localhost:${port}`);

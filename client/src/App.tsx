@@ -11,7 +11,17 @@ function App() {
         <img src={logo} className="App-logo" alt="logo" />
         <p>Hello Vite + React!</p>
         <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
+          <button type="button" onClick={() => {
+            fetch(`http://localhost:5000/viewMe`, {credentials: "include"})
+            .then((response) => {
+                response.json().then((data) => {
+                 console.log(data);
+                })
+            }).catch((error) => {
+                   console.log(error);
+            })
+        }
+          } >
             count is: {count}
           </button>
         </p>
