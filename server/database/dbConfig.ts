@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 
+
+
 const connection_string = process.env.CONNECTION_URI;
 const pool = new Pool({
     connectionString: connection_string,

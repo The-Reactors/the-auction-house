@@ -6,7 +6,11 @@ const pool = require("../database/dbConfig")
 import { uuid } from "uuidv4";
 const multer = require('multer')
 
-
+var pg = require('pg');
+var types = pg.types;
+types.setTypeParser(1114, function(stringValue) {
+return stringValue;
+});
 
 const productImage = multer({
   limits:{
@@ -43,7 +47,7 @@ router.post('/createTable',async(req: Request, mainRes: Response) => {
   router.post('/createProductTable',async(req: Request, mainRes: Response) => {
 
 
-    pool.query('CREATE TABLE auction_products (p_id VARCHAR(255) PRIMARY KEY,name VARCHAR ( 50 ) NOT NULL, pDesc VARCHAR ( 255 ) NOT NULL, pImgs bytea[], sellerId VARCHAR ( 255 ) NOT NULL);', (err:Error, res:any) => {
+    pool.query('CREATE TABLE auction_products (p_id VARCHAR(255) PRIMARY KEY,name VARCHAR ( 50 ) NOT NULL, pDesc VARCHAR ( 255 ) NOT NULL, pImgs bytea[], sellerId VARCHAR ( 255 ) NOT NULL, startDate timestamp NOT NULL, endDate VARCHAR ( 255 ) NOT NULL, maxBid VARCHAR ( 255 ) NOT NULL);', (err:Error, res:any) => {
       if(err)
       {
         console.log(err.stack);
@@ -82,8 +86,8 @@ router.post('/createTable',async(req: Request, mainRes: Response) => {
     if(req.files === undefined){
 
       const query = {
-        text: 'INSERT INTO auction_products (p_id,name,pDesc,sellerId) VALUES($1,$2,$3,$4)',
-        values:[uuid(), req.body.name,req.body.pDesc,req.body.sellerId],
+        text: 'INSERT INTO auction_products (p_id,name,pDesc,sellerId,startDate,endDate,maxBid) VALUES($1,$2,$3,$4,$5,$6,$7)',
+        values:[uuid(), req.body.name,req.body.pDesc,req.body.sellerId, new Date(), req.body.endDate,req.body.maxBid],
       }
 
 
@@ -107,8 +111,8 @@ router.post('/createTable',async(req: Request, mainRes: Response) => {
 
 
       const query = {
-        text: 'INSERT INTO auction_products (p_id,name,pDesc,pImgs,sellerId) VALUES($1,$2,$3,$4,$5)',
-        values:[uuid(), req.body.name,req.body.pDesc,imagesArray, req.body.sellerId],
+        text: 'INSERT INTO auction_products (p_id,name,pDesc,pImgs,sellerId,startDate,endDate,maxBid) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',
+        values:[uuid(), req.body.name,req.body.pDesc,imagesArray, req.body.sellerId,new Date(),req.body.endDate,req.body.maxBid],
       }
 
 
@@ -129,20 +133,172 @@ router.post('/createTable',async(req: Request, mainRes: Response) => {
       
 
     }
-    
-    
+      
 
+  });
+
+  router.post('/insertIntoBidTable',async(req: Request, mainRes: Response) => {
+
+
+      const queryGetBids = {
+        text: 'SELECT * From auction_bids WHERE p_id = $1 AND buyerId = $2',
+        values:[req.body.p_id, req.body.buyerId]
+      }
+  
+      pool.query(queryGetBids, (err:Error, res:any) => {
+  
+        if(err)
+        {
+          console.log(err.stack);
+          return console.error(err.stack);
+        }
+        else
+        {
+          
+  
+         if(res.rows[0] === undefined){
+
+
+          const query = {
+            text: 'INSERT INTO auction_bids (p_id,buyerId,amount) VALUES($1,$2,$3)',
+            values:[req.body.p_id, req.body.buyerId,req.body.amount],
+          }
     
+    
+          pool.query(query, (err:Error, res:any) => {
+            if(err)
+            {
+              console.log(err.stack);
+              return console.error(err.stack);
+            }
+            else
+            {
+              console.log(res.rows);
+
+              const queryGetMaxBid = {
+                text: 'SELECT MAX(amount) From auction_bids GROUP BY p_id HAVING p_id = $1',
+                values:[req.body.p_id]
+              }
+              pool.query(queryGetMaxBid, (err:Error, res:any) => {
+                if(err)
+                {
+                  console.log(err.stack);
+                }
+                else
+                {
+                  console.log(res.rows);
+                  //mainRes.status(200).send(res.rows)
+
+                  const query = {
+                    text: 'UPDATE auction_products SET maxBid = $2 WHERE p_id = $1',
+                    values:[req.body.p_id,res.rows[0].max]
+                  }
+    
+                  pool.query(query, (err:Error, res:any) => {
+                    if(err)
+                    {
+                      console.log(err.stack);
+                      return console.error(err.stack);
+                    }
+                    else
+                    {
+                      console.log(res.rows);
+                      //mainRes.status(200).send(res.rows);
+                      
+                    }
+                  })
+                }
+              })
+              
+             
+            }
+          })
+          mainRes.status(200).send("Values Inserted Succesfully !");
+
+
+
+         }else{
+          if(req.body.amount > res.rows[0].amount){
+          
+            const query = {
+              text: 'UPDATE auction_bids SET amount = $3 WHERE p_id = $1 AND buyerId = $2',
+              values:[req.body.p_id, req.body.buyerId,req.body.amount]
+            }
+        
+            pool.query(query, (err:Error, res:any) => {
+              if(err)
+              {
+                console.log(err.stack);
+                return console.error(err.stack);
+              }
+              else
+              {
+                console.log(res.rows);
+                // mainRes.status(200).send(res.rows);
+
+                const queryGetMaxBid = {
+                  text: 'SELECT MAX(amount) From auction_bids GROUP BY p_id HAVING p_id = $1',
+                  values:[req.body.p_id]
+                }
+                pool.query(queryGetMaxBid, (err:Error, res:any) => {
+                  if(err)
+                  {
+                    console.log(err.stack);
+                  }
+                  else
+                  {
+                    console.log(res.rows);
+                    //mainRes.status(200).send(res.rows)
+  
+                    const query = {
+                      text: 'UPDATE auction_products SET maxBid = $2 WHERE p_id = $1',
+                      values:[req.body.p_id,res.rows[0].max]
+                    }
+      
+                    pool.query(query, (err:Error, res:any) => {
+                      if(err)
+                      {
+                        console.log(err.stack);
+                        return console.error(err.stack);
+                      }
+                      else
+                      {
+                        console.log(res.rows);
+                        mainRes.status(200).send(res.rows);
+                        
+                      }
+                    })
+                  }
+                })
+                
+              }
+            })
+  
+          }else{
+  
+            mainRes.status(200).send("Amount Should be Greater than Previous Bid Amount");
+          }
+         }
+          
+          
+        }
+      })   
+
+      // const queryGetMaxBid = {
+      //   text: 'SELECT MAX(amount) From auction_bids GROUPBY p_id HAVING p_id = $1',
+      //   values:[req.body.p_id]
+      // }
 
   });
 
 
+
   
-  router.post('/insertIntoProductTable',async(req: Request, res: Response) => {
+  router.post('/insertIntoUserTable',async(req: Request, res: Response) => {
 
     
     const query = {
-      text: 'INSERT INTO auction_products (p_id,name,desc,profilePicLink,googleId) VALUES($1,$2,$3,$4,$5)',
+      text: 'INSERT INTO auction_user (user_id,name,desc,profilePicLink,googleId) VALUES($1,$2,$3,$4,$5)',
       values:[req.body.user_id, req.body.name,req.body.email, req.body.profilePicLink,req.body.googleId],
     }
 
@@ -162,16 +318,40 @@ router.post('/createTable',async(req: Request, mainRes: Response) => {
 
   });
 
-  router.post('/viewTable', async(req: Request, mainRes: Response) => {
+  router.get('/getProductsList', async(req: Request, mainRes: Response) => {
 
-    pool.query('SELECT * FROM auction_users', (err:Error, res:any) => {
+    const queryGetMaxBid = {
+      text: 'SELECT * From auction_products',
+      values:[]
+    }
+    pool.query(queryGetMaxBid, (err:Error, res:any) => {
       if(err)
       {
         console.log(err.stack);
       }
       else
       {
-        console.log(res.rows);
+        
+        mainRes.status(200).send(res.rows)
+      }
+    })
+    
+  });
+
+  router.get('/getProduct', async(req: Request, mainRes: Response) => {
+
+    const queryGetMaxBid = {
+      text: 'SELECT * From auction_products WHERE p_id = $1',
+      values:[req.body.p_id]
+    }
+    pool.query(queryGetMaxBid, (err:Error, res:any) => {
+      if(err)
+      {
+        console.log(err.stack);
+      }
+      else
+      {
+        
         mainRes.status(200).send(res.rows)
       }
     })
