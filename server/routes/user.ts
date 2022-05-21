@@ -411,8 +411,8 @@ router.post('/createTable',async(req: Request, mainRes: Response) => {
 );
 
 router.get('/auth/login/callback', passport.authenticate('google', {
-  successRedirect: 'http://localhost:5000/graphql',
-  failureRedirect: 'http://localhost:5000/graphql',
+  successRedirect: 'http://localhost:3000',
+  failureRedirect: 'http://localhost:3000',
 }));
 
   module.exports = router
