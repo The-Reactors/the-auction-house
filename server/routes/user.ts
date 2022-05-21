@@ -351,12 +351,34 @@ router.post('/createTable',async(req: Request, mainRes: Response) => {
       }
       else
       {
-        
         mainRes.status(200).send(res.rows)
       }
     })
     
   });
+
+
+  router.get('/getBidsList', async(req: Request, mainRes: Response) => {
+
+    const queryGetMaxBid = {
+      text: 'SELECT * From auction_bids WHERE buyerId = $1',
+      values:[req.body.buyerId]
+    }
+    pool.query(queryGetMaxBid, (err:Error, res:any) => {
+      if(err)
+      {
+        console.log(err.stack);
+      }
+      else
+      {
+        mainRes.status(200).send(res.rows)
+      }
+    })
+    
+  });
+
+
+
 
   router.get('/viewMe', async(req: Request, mainRes: Response) => {
 
