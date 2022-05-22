@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card } from 'react-bootstrap';
 import Rating from './rating';
-import confirmation from "../assets/confirmation.png"
 import noImage  from "../assets/no-image.jpg"
 import 'animate.css';
 
