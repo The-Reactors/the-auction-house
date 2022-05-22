@@ -31,6 +31,66 @@ const ProductDetails = () => {
 
   const classes = useStyles();
 
+  const [prodDetails, setProdDetails] = useState({
+    name:"",
+    desc:"",
+    maxBid:"",
+    
+})
+
+const [img, setImg] = useState(false);
+const [imagePresent, setImagePresent] = useState(false);
+
+
+
+
+
+  
+const getProduct = () => {
+
+  fetch(`http://localhost:5000/getProduct/${productId}`, {credentials: "include"})
+            .then((response) => {
+                response.json().then((problems) => {
+                    //setIssues(problems)
+                    // updateIssues(problems)
+                    
+                    // refreshCard === true ? setRefreshCard(false) : setRefreshCard(true)
+                 
+                    // setIsLoadingHome(false)
+                    // setIsLoadingHome(false)
+                    console.log(problems[0])
+                     
+                    setProdDetails({
+                      name:problems[0].name,
+                      desc:problems[0].pdesc,
+                      maxBid:problems[0].maxbid,
+                      
+                    })
+
+                    
+
+
+                    if(problems[0].pimgs.length)
+                     {
+                        setImagePresent(true)
+                        
+                        let imagesFinal = []
+                        imagesFinal[0] = new Buffer(problems[0].pimgs[0]).toString("base64")
+                        setImg(imagesFinal)
+                      }
+                    
+            })
+        })
+
+}
+
+
+        useEffect(() =>{
+          getProduct();
+      }, [])
+
+
+
   return (
     <>
 
@@ -56,7 +116,7 @@ const ProductDetails = () => {
                     text={`78 reviews`}
                   />
                 </ListGroup.Item>
-                <ListGroup.Item>Price: $243</ListGroup.Item>
+                <ListGroup.Item>Price: {prodDetails.maxBid}</ListGroup.Item>
                 <ListGroup.Item>Description: 23423</ListGroup.Item>
               </ListGroup>
             </Col>

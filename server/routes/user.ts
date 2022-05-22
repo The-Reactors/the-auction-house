@@ -88,7 +88,7 @@ router.post('/createTable',async(req: Request, mainRes: Response) => {
 
       const query = {
         text: 'INSERT INTO auction_products (p_id,name,pDesc,sellerId,startDate,endDate,maxBid) VALUES($1,$2,$3,$4,$5,$6,$7)',
-        values:[uuid(), req.body.name,req.body.pDesc,req.body.sellerId, new Date(), req.body.endDate,req.body.maxBid],
+        values:[uuid(), req.body.name,req.body.pDesc,req.user!.user[0].user_id, new Date(), req.body.endDate,req.body.maxBid],
       }
 
 
@@ -113,7 +113,7 @@ router.post('/createTable',async(req: Request, mainRes: Response) => {
 
       const query = {
         text: 'INSERT INTO auction_products (p_id,name,pDesc,pImgs,sellerId,startDate,endDate,maxBid) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',
-        values:[uuid(), req.body.name,req.body.pDesc,imagesArray, req.body.sellerId,new Date(),req.body.endDate,req.body.maxBid],
+        values:[uuid(), req.body.name,req.body.pDesc,imagesArray, req.user!.user[0].user_id,new Date(),req.body.endDate,req.body.maxBid],
       }
 
 
@@ -143,7 +143,7 @@ router.post('/createTable',async(req: Request, mainRes: Response) => {
 
       const queryGetBids = {
         text: 'SELECT * From auction_bids WHERE p_id = $1 AND buyerId = $2',
-        values:[req.body.p_id, req.body.buyerId]
+        values:[req.body.p_id, req.user!.user[0].user_id]
       }
   
       pool.query(queryGetBids, (err:Error, res:any) => {
@@ -162,7 +162,7 @@ router.post('/createTable',async(req: Request, mainRes: Response) => {
 
           const query = {
             text: 'INSERT INTO auction_bids (p_id,buyerId,amount) VALUES($1,$2,$3)',
-            values:[req.body.p_id, req.body.buyerId,req.body.amount],
+            values:[req.body.p_id, req.user!.user[0].user_id,req.body.amount],
           }
     
     
@@ -223,7 +223,7 @@ router.post('/createTable',async(req: Request, mainRes: Response) => {
           
             const query = {
               text: 'UPDATE auction_bids SET amount = $3 WHERE p_id = $1 AND buyerId = $2',
-              values:[req.body.p_id, req.body.buyerId,req.body.amount]
+              values:[req.body.p_id, req.user!.user[0].user_id,req.body.amount]
             }
         
             pool.query(query, (err:Error, res:any) => {
@@ -339,12 +339,13 @@ router.post('/createTable',async(req: Request, mainRes: Response) => {
     
   });
 
-  router.get('/getProduct', async(req: Request, mainRes: Response) => {
+  router.get('/getProduct/:problemId', async(req: Request, mainRes: Response) => {
 
-    console.log("fasdfsfa",req.user!.user[0].user_id)
+   // console.log("fasdfsfa",req.user!.user[0].user_id)
+   const {problemId} = req.params
     const queryGetMaxBid = {
       text: 'SELECT * From auction_products WHERE p_id = $1',
-      values:[req.body.p_id]
+      values:[problemId]
     }
     pool.query(queryGetMaxBid, (err:Error, res:any) => {
       if(err)
@@ -364,7 +365,7 @@ router.post('/createTable',async(req: Request, mainRes: Response) => {
 
     const queryGetMaxBid = {
       text: 'SELECT * From auction_bids WHERE buyerId = $1',
-      values:[req.body.buyerId]
+      values:[req.user!.user[0].user_id]
     }
     pool.query(queryGetMaxBid, (err:Error, res:any) => {
       if(err)
