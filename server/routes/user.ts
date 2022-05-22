@@ -140,6 +140,7 @@ router.post('/createTable',async(req: Request, mainRes: Response) => {
 
   router.post('/insertIntoBidTable',async(req: Request, mainRes: Response) => {
 
+    console.log("amount : ", req.body.amount)
 
       const queryGetBids = {
         text: 'SELECT * From auction_bids WHERE p_id = $1 AND buyerId = $2',

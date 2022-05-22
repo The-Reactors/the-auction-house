@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Row, Col, Image, ListGroup, Card } from 'react-bootstrap';
 import Rating from '../Components/rating';
-import { Select, Button, FormControl, makeStyles, MenuItem } from '@material-ui/core/';
+import { Select, Button, FormControl, makeStyles, MenuItem, TextField} from '@material-ui/core/';
 import SinglePageLoader from "../Components/singlePageLoader";
 import noImage from "../assets/no-image.jpg"
+import swal from 'sweetalert';
 
 const useStyles = makeStyles((theme) => ({
   typography: {
@@ -40,7 +41,7 @@ const ProductDetails = () => {
 
 const [img, setImg] = useState(false);
 const [imagePresent, setImagePresent] = useState(false);
-
+const [amount, setAmount] = useState(0);
 
 
 
@@ -91,6 +92,56 @@ const getProduct = () => {
 
 
 
+      const placeBid = () => {
+
+
+        console.log(productId)
+        const requestOptions = {
+          method: 'POST',
+          body:JSON.stringify({ 
+            amount: amount,
+            p_id:productId
+           }),  
+          credentials: "include",
+          headers: { 'Content-Type': 'application/json' },
+          };
+          fetch(`http://localhost:5000/insertIntoBidTable`, requestOptions )
+          .then(async response => {
+  
+              if(response.ok){
+           
+                  swal({
+                    title: "Success!",
+                    text: "Bid Placed Successfully",
+                    icon: "success",
+                  })
+                       
+               }
+              
+              else{
+                  throw response.json();
+              }
+            })
+            .catch(async (error) => {
+              const errorMessage = await error;
+     
+              swal({
+                title: "Error!",
+                text: errorMessage.toString(),
+                icon: "error",
+              });
+             
+            }) 
+
+
+
+
+
+
+
+      }
+
+
   return (
     <>
 
@@ -103,12 +154,12 @@ const getProduct = () => {
         <>
           <Row>
             <Col md={6}>
-              <Image src={noImage} alt="dfsjn" fluid />
+              {imagePresent ? <Image src={`data:image/png;base64,${img}`} alt="dfsjn" fluid /> : <Image src={noImage} alt="dfsjn" fluid />}
             </Col>
             <Col md={3}>
               <ListGroup variant="flush">
                 <ListGroup.Item>
-                  <h3>sfdfn</h3>
+                  <h3>{prodDetails.name}</h3>
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <Rating
@@ -117,7 +168,7 @@ const getProduct = () => {
                   />
                 </ListGroup.Item>
                 <ListGroup.Item>Price: {prodDetails.maxBid}</ListGroup.Item>
-                <ListGroup.Item>Description: 23423</ListGroup.Item>
+                <ListGroup.Item>Description: {prodDetails.desc}</ListGroup.Item>
               </ListGroup>
             </Col>
             <Col md={3}>
@@ -127,7 +178,7 @@ const getProduct = () => {
                     <Row>
                       <Col>Price:</Col>
                       <Col>
-                        <strong>$234324</strong>
+                        <strong>$ {prodDetails.maxBid}</strong>
                       </Col>
                     </Row>
                   </ListGroup.Item>
@@ -141,6 +192,31 @@ const getProduct = () => {
                         <strong>Active</strong>
                       </Col>
                     </Row>
+                  </ListGroup.Item>
+
+                </ListGroup>
+                <ListGroup variant="flush">
+                  <ListGroup.Item>
+                  <TextField
+              autoComplete="bidAmount"
+              name="bidAmount"
+              variant="outlined"
+              type="number"
+              required
+              id="bidAmount"
+              placeholder="Bid Amount"
+              label="Bid Amount"
+              onChange={(e) => setAmount(e.target.value)}
+            />
+                  </ListGroup.Item>
+
+                </ListGroup>
+
+                <ListGroup variant="flush">
+                  <ListGroup.Item>
+                  <Button variant="contained" color="primary" onClick={placeBid}>
+              Place Bid
+            </Button>
                   </ListGroup.Item>
 
                 </ListGroup>
