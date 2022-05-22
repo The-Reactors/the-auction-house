@@ -29,12 +29,12 @@ useEffect(() => {
  
   return (
     <Card className="my-3 p-3 rounded  animate__animated animate__fadeInUp">
-      <Link to={'/da'}>
+      <Link to={`/productDetails${props.productInfo.p_id}`}>
        {imagePresent ? <Card.Img style = {{"maxHeight":"150px", "maxWidth":"300px"}}src={`data:image/png;base64,${image[0]}`} /> : <Card.Img style={{"maxHeight":"150px", "maxWidth":"200px"}} src={noImage} /> } 
       </Link>
 
       <Card.Body>
-        <Link to={'/da'}>
+        <Link to={`/productDetails/${props.productInfo.p_id}`}>
           <Card.Title as="div">
             <strong>{props.productInfo.name}</strong>
           </Card.Title>
