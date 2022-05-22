@@ -1,15 +1,23 @@
 import React from 'react';
+import { Container } from 'react-bootstrap';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import Home from './components/home';
-import Wow from "./components/wow"
+import Header from './Components/header';
+import Home from './pages/Home';
+import Wow from './pages/Wow'
 function App() {
   return (
     <BrowserRouter>
-          <Switch>
-            <Route exact={true} path='/' component={Home} />
-            <Route exact={true} path='/great' component={Wow} />
-          </Switch>
+    <Header/>
+      <main className="py-3">
+            <Container>
+              <Switch>
+                <Route exact={true} path='/' component={Home} />
+                
+              </Switch>
+        </Container>
+      </main>  
     </BrowserRouter>
+    
   );
 }
 

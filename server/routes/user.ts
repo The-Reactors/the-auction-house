@@ -5,6 +5,7 @@ const router = new express.Router()
 const pool = require("../database/dbConfig")
 import { uuid } from "uuidv4";
 const multer = require('multer')
+const auth = require('../middleware/auth')
 
 var pg = require('pg');
 var types = pg.types;
@@ -381,8 +382,15 @@ router.post('/createTable',async(req: Request, mainRes: Response) => {
 
 
   router.get('/viewMe', async(req: Request, mainRes: Response) => {
-
-   mainRes.send(req.user);
+  if(req.user)
+  {
+    mainRes.send(req.user);
+  }
+  else
+  {
+    mainRes.send({})
+  }
+  
     
   });
 
@@ -414,5 +422,10 @@ router.get('/auth/login/callback', passport.authenticate('google', {
   successRedirect: 'http://localhost:3000',
   failureRedirect: 'http://localhost:3000',
 }));
+
+router.get('/users/logout', auth, async (req, res) => {
+  req.logout();
+  res.redirect(`${process.env.CLIENT_URL}/`);
+})
 
   module.exports = router

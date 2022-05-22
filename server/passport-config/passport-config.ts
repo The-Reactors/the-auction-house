@@ -5,6 +5,7 @@ const passport = require("passport");
 const googleStrategy = require("passport-google-oauth2").Strategy;
 const pool = require("../database/dbConfig")
 
+const uniqueProfileId = uuid();
 passport.use( 
     new googleStrategy(
       {
@@ -16,6 +17,7 @@ passport.use(
       },
       async (req, accessToken, refreshToken, profile, done) => {
         const defaultUser = {
+          _id:uniqueProfileId,
           name:`${profile.name.givenName} ${profile.name.familyName}`,
           email:profile.emails[0].value,
           profilePicLink:profile.photos[0].value,
@@ -39,7 +41,7 @@ passport.use(
                 {
                     const query = {
                     text: 'INSERT INTO auction_users (user_id,name,email,profilePicLink,googleId) VALUES($1,$2,$3,$4,$5)',
-                    values:[uuid(), defaultUser.name,defaultUser.email, defaultUser.profilePicLink,defaultUser.googleId],
+                    values:[uniqueProfileId, defaultUser.name,defaultUser.email, defaultUser.profilePicLink,defaultUser.googleId],
                     }
                 
                     pool.query(query, (err:Error, res:any) => {
