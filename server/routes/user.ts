@@ -340,6 +340,27 @@ router.post('/createTable',async(req: Request, mainRes: Response) => {
     
   });
 
+
+  router.get('/getUserProductsList', async(req: Request, mainRes: Response) => {
+
+    const queryGetMaxBid = {
+      text: 'SELECT * From auction_products WHERE sellerId = $1',
+      values:[req.user!.user[0].user_id]
+    }
+    pool.query(queryGetMaxBid, (err:Error, res:any) => {
+      if(err)
+      {
+        console.log(err.stack);
+      }
+      else
+      {
+        
+        mainRes.status(200).send(res.rows)
+      }
+    })
+    
+  });
+
   router.get('/getProduct/:problemId', async(req: Request, mainRes: Response) => {
 
    // console.log("fasdfsfa",req.user!.user[0].user_id)
@@ -365,7 +386,7 @@ router.post('/createTable',async(req: Request, mainRes: Response) => {
   router.get('/getBidsList', async(req: Request, mainRes: Response) => {
 
     const queryGetMaxBid = {
-      text: 'SELECT * From auction_bids WHERE buyerId = $1',
+      text: 'SELECT * From auction_bids b NATURAL JOIN auction_products p WHERE b.buyerId = $1',
       values:[req.user!.user[0].user_id]
     }
     pool.query(queryGetMaxBid, (err:Error, res:any) => {
