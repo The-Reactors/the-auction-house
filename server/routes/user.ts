@@ -48,7 +48,7 @@ router.post('/createTable',async(req: Request, mainRes: Response) => {
   router.post('/createProductTable',async(req: Request, mainRes: Response) => {
 
 
-    pool.query('CREATE TABLE auction_products (p_id VARCHAR(255) PRIMARY KEY,name VARCHAR ( 50 ) NOT NULL, pDesc VARCHAR ( 255 ) NOT NULL, pImgs bytea[], sellerId VARCHAR ( 255 ) NOT NULL, startDate timestamp NOT NULL, endDate VARCHAR ( 255 ) NOT NULL, maxBid VARCHAR ( 255 ) NOT NULL);', (err:Error, res:any) => {
+    pool.query('CREATE TABLE auction_products (p_id VARCHAR(255) PRIMARY KEY,name VARCHAR ( 255 ) NOT NULL, pDesc VARCHAR ( 255 ) NOT NULL, pImgs bytea[], sellerId VARCHAR ( 255 ) NOT NULL, startDate timestamp NOT NULL, endDate VARCHAR ( 255 ) NOT NULL, maxBid VARCHAR ( 255 ) NOT NULL);', (err:Error, res:any) => {
       if(err)
       {
         console.log(err.stack);

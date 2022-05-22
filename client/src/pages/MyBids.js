@@ -53,7 +53,7 @@ const MyBids = () => {
                <span class="badge badge-primary badge-pill">{index+1}</span>
                  </Col>
                    <Col className='col-md-3'>
-                   {bid.pimgs.length ? <Image style = {{"maxHeight":"150px", "maxWidth":"300px"}} src={`data:image/png;base64,${ new Buffer(bid.pimgs[0].data).toString("base64")}`} alt="dfsjn" fluid /> : <Image style={{"maxHeight":"150px", "maxWidth":"200px"}}  src={noImage} alt="dfsjn" fluid />}
+                   {bid.pimgs.length ? <Image style = {{"maxHeight":"120px", "maxWidth":"200px"}} src={`data:image/png;base64,${ new Buffer(bid.pimgs[0].data).toString("base64")}`} alt="dfsjn" fluid /> : <Image style={{"maxHeight":"150px", "maxWidth":"200px"}}  src={noImage} alt="dfsjn" fluid />}
                    </Col>
                  <Col>
                     <Row>
