@@ -341,6 +341,7 @@ router.post('/createTable',async(req: Request, mainRes: Response) => {
 
   router.get('/getProduct', async(req: Request, mainRes: Response) => {
 
+    console.log("fasdfsfa",req.user!.user[0].user_id)
     const queryGetMaxBid = {
       text: 'SELECT * From auction_products WHERE p_id = $1',
       values:[req.body.p_id]
