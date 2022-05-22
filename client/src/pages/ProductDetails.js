@@ -108,7 +108,7 @@ const getProduct = () => {
                     text: "Bid Placed Successfully",
                     icon: "success",
                   })
-                       
+                  window.location.reload(); 
                }
               
               else{
@@ -156,11 +156,11 @@ const getProduct = () => {
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <Rating
-                    value={3434}
+                    value={3.5}
                     text={`78 reviews`}
                   />
                 </ListGroup.Item>
-                <ListGroup.Item>Price: {prodDetails.maxBid}</ListGroup.Item>
+                <ListGroup.Item>Price: {prodDetails.maxBid} Rs</ListGroup.Item>
                 <ListGroup.Item>Description: {prodDetails.desc}</ListGroup.Item>
               </ListGroup>
             </Col>
@@ -171,7 +171,7 @@ const getProduct = () => {
                     <Row>
                       <Col>Price:</Col>
                       <Col>
-                        <strong>$ {prodDetails.maxBid}</strong>
+                        <strong>₹ {prodDetails.maxBid}</strong>
                       </Col>
                     </Row>
                   </ListGroup.Item>
@@ -182,7 +182,7 @@ const getProduct = () => {
                     <Row>
                       <Col>Status:</Col>
                       <Col>
-                        <strong>Active</strong>
+                        <a style ={{"color":"green", "fontWeight":"bold"}}>Active</a>
                       </Col>
                     </Row>
                   </ListGroup.Item>
