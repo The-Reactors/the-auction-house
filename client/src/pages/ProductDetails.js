@@ -28,7 +28,7 @@ const ProductDetails = () => {
 
   const params = useParams();
   const productId = params.productId;
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const classes = useStyles();
 
@@ -52,13 +52,6 @@ const getProduct = () => {
   fetch(`http://localhost:5000/getProduct/${productId}`, {credentials: "include"})
             .then((response) => {
                 response.json().then((problems) => {
-                    //setIssues(problems)
-                    // updateIssues(problems)
-                    
-                    // refreshCard === true ? setRefreshCard(false) : setRefreshCard(true)
-                 
-                    // setIsLoadingHome(false)
-                    // setIsLoadingHome(false)
                     console.log(problems[0])
                      
                     setProdDetails({
@@ -79,7 +72,7 @@ const getProduct = () => {
                         imagesFinal[0] = new Buffer(problems[0].pimgs[0]).toString("base64")
                         setImg(imagesFinal)
                       }
-                    
+                    setLoading(false)
             })
         })
 

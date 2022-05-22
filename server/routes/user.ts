@@ -88,7 +88,7 @@ router.post('/createTable',async(req: Request, mainRes: Response) => {
 
       const query = {
         text: 'INSERT INTO auction_products (p_id,name,pDesc,sellerId,startDate,endDate,maxBid) VALUES($1,$2,$3,$4,$5,$6,$7)',
-        values:[uuid(), req.body.name,req.body.pDesc,req.user!.user[0].user_id, new Date(), req.body.endDate,req.body.maxBid],
+        values:[uuid(), req.body.name,req.body.pDesc,req.user!.user[0].user_id, req.body.startBidDate, req.body.endDate,req.body.maxBid],
       }
 
 
