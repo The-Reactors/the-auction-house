@@ -50,10 +50,15 @@ const logoutHandler = () => {
               {Object.keys(userInfo).length !== 0 ?  <img style = {{"maxHeight":"40px", "maxWidth":"40px", "borderRadius":"50%"}} src={userInfo.user[0].profilepiclink} /> : null }
               {Object.keys(userInfo).length !== 0  ? (
                 <NavDropdown title={userInfo.user[0].name} id="username">
-                  <LinkContainer to= '/profile'>
-                    <NavDropdown.Item>Profile</NavDropdown.Item>
+                    <LinkContainer to='/createNewAuction'>
+                    <NavDropdown.Item>Create My Own Auction</NavDropdown.Item>
                   </LinkContainer>
-                  
+                  <LinkContainer to='/myBids'>
+                    <NavDropdown.Item>Bids Placed By Me</NavDropdown.Item>
+                  </LinkContainer>
+                  <LinkContainer to='/mySales'>
+                    <NavDropdown.Item>My Listed Products</NavDropdown.Item>
+                  </LinkContainer>
                     <NavDropdown.Item><div onClick={logoutHandler}>Logout</div></NavDropdown.Item>
                   
                 </NavDropdown>
