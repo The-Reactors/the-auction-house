@@ -6,6 +6,7 @@ import { Select, Button, FormControl, makeStyles, MenuItem, TextField} from '@ma
 import SinglePageLoader from "../Components/singlePageLoader";
 import noImage from "../assets/no-image.jpg"
 import swal from 'sweetalert';
+import Moment from 'react-moment';  
 
 const useStyles = makeStyles((theme) => ({
   typography: {
@@ -36,6 +37,7 @@ const ProductDetails = () => {
     name:"",
     desc:"",
     maxBid:"",
+    endDate:"",
     
 })
 
@@ -58,7 +60,7 @@ const getProduct = () => {
                       name:problems[0].name,
                       desc:problems[0].pdesc,
                       maxBid:problems[0].maxbid,
-                      
+                      endDate: problems[0].enddate
                     })
 
                     
@@ -188,6 +190,20 @@ const getProduct = () => {
                   </ListGroup.Item>
 
                 </ListGroup>
+
+                <ListGroup variant="flush">
+                  <ListGroup.Item>
+                    <Row>
+                      <Col>End Date Of Auction:</Col>
+                      <Col>
+                      <Moment parse="YYYY-MM-DD HH:mm">
+                          {prodDetails.endDate}
+                     </Moment>
+                      </Col>
+                    </Row>
+                  </ListGroup.Item>
+                </ListGroup>
+
                 <ListGroup variant="flush">
                   <ListGroup.Item>
                   <TextField
